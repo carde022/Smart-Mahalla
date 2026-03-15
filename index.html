@@ -33,30 +33,30 @@
 <div class="card">
     <div class="header">
         <h2>SMART MAHALLA</h2>
-        <p style="font-size: 12px; color: #777;">E'loningizni tartibli to'ldiring</p>
+        <p style="font-size: 12px; color: #777;">E'loningizni to'g'ri bo'limga joylang</p>
     </div>
 
     <div class="input-group">
         <label>Bo'limni tanlang</label>
-        <select id="category">
+        <select id="category" onchange="updatePlaceholders()">
             <option value="🚗 Mashina">🚗 Mashina</option>
             <option value="🐄 Mol-hol">🐄 Mol-hol</option>
             <option value="🐑 Qo'y-qo'zi">🐑 Qo'y-qo'zi</option>
-            <option value="🧱 Xomashyo">🧱 Xomashyo (G'isht, qum va h.z)</option>
+            <option value="🧱 Xomashyo">🧱 Xomashyo</option>
             <option value="🌾 Yem-hashak">🌾 Yem-hashak</option>
             <option value="🏠 Uy-joy">🏠 Uy-joy</option>
-            <option value="📱 Boshqa">📱 Boshqa e'lonlar</option>
+            <option value="📱 Boshqa">📱 Boshqa</option>
         </select>
     </div>
 
     <div class="input-group">
-        <label>Mahsulot nomi</label>
-        <input type="text" id="name" placeholder="Masalan: Press somon">
+        <label id="label_name">Mahsulot nomi</label>
+        <input type="text" id="name" placeholder="Masalan: Chevrolet Cobalt">
     </div>
 
     <div class="input-group">
         <label>Narxi (so'm)</label>
-        <input type="number" id="price" placeholder="Narxni yozing">
+        <input type="number" id="price" placeholder="Sotilish narxini yozing">
     </div>
 
     <div class="input-group">
@@ -65,13 +65,13 @@
     </div>
 
     <div class="input-group">
-        <label>Manzil</label>
-        <input type="text" id="address" placeholder="Masalan: Jarqo'rg'on, Oltinsoy ko'chasi">
+        <label>Manzil (Mahalla/Ko'cha)</label>
+        <input type="text" id="address" placeholder="Masalan: Jarqo'rg'on tumani">
     </div>
 
     <div class="input-group">
         <label>Qo'shimcha tavsif</label>
-        <textarea id="desc" rows="3" placeholder="Holati haqida batafsil..."></textarea>
+        <textarea id="desc" rows="3" placeholder="Yili, holati haqida..."></textarea>
     </div>
 
     <button class="btn" onclick="sendData()">KAYINGI QADAM (RASM) ➔</button>
@@ -82,7 +82,36 @@
 <script>
     let tg = window.Telegram.WebApp;
     tg.expand();
-    tg.MainButton.hide();
+
+    // Bo'limga qarab placeholderlarni o'zgartiruvchi funksiya
+    function updatePlaceholders() {
+        const cat = document.getElementById('category').value;
+        const nameInput = document.getElementById('name');
+        const descInput = document.getElementById('desc');
+
+        if (cat.includes("Mashina")) {
+            nameInput.placeholder = "Masalan: Chevrolet Cobalt";
+            descInput.placeholder = "Yili: 2023, rangi: oq, yurgani: 10,000 km...";
+        } else if (cat.includes("Mol-hol")) {
+            nameInput.placeholder = "Masalan: Golshtin zotli sigir";
+            descInput.placeholder = "Suti: kuniga 20 litr, nechinchi bolasi...";
+        } else if (cat.includes("Qo'y-qo'zi")) {
+            nameInput.placeholder = "Masalan: Hisori qo'chqor";
+            descInput.placeholder = "Yoshi: 2 yosh, vazni: 80 kg atrofida...";
+        } else if (cat.includes("Xomashyo")) {
+            nameInput.placeholder = "Masalan: Pishgan g'isht";
+            descInput.placeholder = "Soni: 5000 dona, yetkazib berish ichida...";
+        } else if (cat.includes("Yem-hashak")) {
+            nameInput.placeholder = "Masalan: Bug'doy press";
+            descInput.placeholder = "Soni: 200 ta press, Jarqo'rg'onda...";
+        } else if (cat.includes("Uy-joy")) {
+            nameInput.placeholder = "Masalan: 4 xonali hovli";
+            descInput.placeholder = "Maydoni: 6 sotix, gaz, suv, svet bor...";
+        } else {
+            nameInput.placeholder = "Nima sotmoqchisiz?";
+            descInput.placeholder = "Batafsil ma'lumot yozing...";
+        }
+    }
 
     function sendData() {
         const data = {
@@ -102,6 +131,9 @@
         tg.sendData(JSON.stringify(data));
         tg.close();
     }
+    
+    // Sahifa yuklanganda placeholderlarni birinchi marta to'g'irlash
+    updatePlaceholders();
 </script>
 </body>
 </html>
