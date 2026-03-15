@@ -3,53 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SMART MAHALLA</title>
+    <title>SMART MAHALLA PRO</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; padding: 20px; }
-        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        h2 { color: #0088cc; text-align: center; margin-top: 0; }
+        :root { --main-color: #008080; } /* Yashil-moviy (Teal) rang */
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; margin: 0; padding: 15px; }
+        .card { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .header { text-align: center; margin-bottom: 20px; }
+        .header h2 { color: var(--main-color); margin: 0; font-size: 24px; }
+        
         .input-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: 600; color: #555; }
-        input, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 16px; }
-        .btn { background: #0088cc; color: white; border: none; padding: 15px; width: 100%; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .footer-text { text-align: center; font-size: 12px; color: #999; margin-top: 20px; }
+        label { display: block; margin-bottom: 6px; font-weight: 600; color: #444; font-size: 14px; }
+        input, select, textarea { 
+            width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 12px; 
+            box-sizing: border-box; font-size: 16px; transition: 0.3s;
+        }
+        input:focus, select:focus, textarea:focus { border-color: var(--main-color); outline: none; }
+        
+        .btn { 
+            background: var(--main-color); color: white; border: none; padding: 16px; 
+            width: 100%; border-radius: 12px; font-size: 18px; font-weight: bold; 
+            cursor: pointer; margin-top: 10px; box-shadow: 0 5px 15px rgba(0,128,128,0.3);
+        }
+        .footer-logo { text-align: center; font-size: 11px; color: #aaa; margin-top: 20px; letter-spacing: 1px; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>SMART MAHALLA</h2>
+    <div class="header">
+        <h2>SMART MAHALLA</h2>
+        <p style="font-size: 12px; color: #777;">E'loningizni tartibli to'ldiring</p>
+    </div>
+
     <div class="input-group">
-        <label>Nima sotiladi?</label>
+        <label>Bo'limni tanlang</label>
+        <select id="category">
+            <option value="🚗 Mashina">🚗 Mashina</option>
+            <option value="🐄 Mol-hol">🐄 Mol-hol</option>
+            <option value="🐑 Qo'y-qo'zi">🐑 Qo'y-qo'zi</option>
+            <option value="🧱 Xomashyo">🧱 Xomashyo (G'isht, qum va h.z)</option>
+            <option value="🌾 Yem-hashak">🌾 Yem-hashak</option>
+            <option value="🏠 Uy-joy">🏠 Uy-joy</option>
+            <option value="📱 Boshqa">📱 Boshqa e'lonlar</option>
+        </select>
+    </div>
+
+    <div class="input-group">
+        <label>Mahsulot nomi</label>
         <input type="text" id="name" placeholder="Masalan: Press somon">
     </div>
+
     <div class="input-group">
-        <label>Narxi (so'mda)</label>
-        <input type="number" id="price" placeholder="Narxni kiriting">
+        <label>Narxi (so'm)</label>
+        <input type="number" id="price" placeholder="Narxni yozing">
     </div>
+
     <div class="input-group">
-        <label>Batafsil ma'lumot</label>
-        <textarea id="desc" rows="4" placeholder="Holati, manzili..."></textarea>
+        <label>Telefon raqamingiz</label>
+        <input type="tel" id="phone" value="+998" placeholder="+998 90 123 45 67">
     </div>
-    <button class="btn" onclick="yuborish()">KEYINGI QADAM ➔</button>
+
+    <div class="input-group">
+        <label>Manzil</label>
+        <input type="text" id="address" placeholder="Masalan: Jarqo'rg'on, Oltinsoy ko'chasi">
+    </div>
+
+    <div class="input-group">
+        <label>Qo'shimcha tavsif</label>
+        <textarea id="desc" rows="3" placeholder="Holati haqida batafsil..."></textarea>
+    </div>
+
+    <button class="btn" onclick="sendData()">KAYINGI QADAM (RASM) ➔</button>
 </div>
 
-<div class="footer-text">Ilova asoschisi: Abdujamilov Yo'ldosh</div>
+<div class="footer-logo">ASOSCHI: ABDUJAMILOV YOLDOSH</div>
 
 <script>
     let tg = window.Telegram.WebApp;
     tg.expand();
+    tg.MainButton.hide();
 
-    function yuborish() {
+    function sendData() {
         const data = {
+            category: document.getElementById('category').value,
             item_name: document.getElementById('name').value,
             price: document.getElementById('price').value,
+            phone: document.getElementById('phone').value,
+            address: document.getElementById('address').value,
             desc: document.getElementById('desc').value
         };
 
-        if(!data.item_name || !data.price) {
-            alert("Iltimos, nomi va narxini to'ldiring!");
+        if(!data.item_name || !data.price || data.phone === "+998") {
+            alert("Iltimos, barcha muhim joylarni to'ldiring!");
             return;
         }
 
