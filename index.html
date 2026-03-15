@@ -6,44 +6,55 @@
     <title>SMART MAHALLA</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; padding: 15px; margin: 0; }
-        .container { max-width: 400px; margin: auto; }
-        .header { text-align: center; padding: 20px 0; color: #0088cc; }
-        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .input-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 14px; color: #555; }
-        input, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 16px; }
-        input:focus { border-color: #0088cc; outline: none; }
-        .btn { background: #0088cc; color: white; border: none; padding: 15px; width: 100%; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .btn:active { background: #006699; }
+        body { font-family: sans-serif; background: #f4f4f9; margin: 0; padding: 0; }
+        .tabs { display: flex; background: #0088cc; color: white; }
+        .tab { flex: 1; text-align: center; padding: 15px; cursor: pointer; font-weight: bold; }
+        .tab.active { background: #006699; border-bottom: 3px solid white; }
+        .container { padding: 15px; }
+        .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 15px; display: none; }
+        .card.active { display: block; }
+        .input-group { margin-bottom: 12px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; }
+        input, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
+        .btn { background: #0088cc; color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; font-size: 16px; margin-top: 10px; }
+        .elon-item { border-bottom: 1px solid #eee; padding: 10px 0; }
+        .elon-item b { color: #0088cc; }
     </style>
 </head>
 <body>
 
+<div class="tabs">
+    <div class="tab active" onclick="showTab('view')">👁 E'lonlar</div>
+    <div class="tab" onclick="showTab('add')">➕ E'lon berish</div>
+</div>
+
 <div class="container">
-    <div class="header">
-        <h2>SMART MAHALLA</h2>
-        <p>E'lon berish formasi</p>
+    <div id="tab-view" class="card active">
+        <h3>Mahalla e'lonlari</h3>
+        <div id="elonlar-ro'yxati">
+            <p>Hozircha e'lonlar yo'q. Birinchi bo'lib e'lon bering!</p>
+        </div>
     </div>
 
-    <div class="card">
+    <div id="tab-add" class="card">
+        <h3>Yangi e'lon</h3>
         <div class="input-group">
-            <label>Nima sotmoqchisiz?</label>
+            <label>Mahsulot nomi</label>
             <input type="text" id="item_name" placeholder="Masalan: Press somon">
         </div>
         <div class="input-group">
-            <label>Narxi (so'm)</label>
-            <input type="number" id="price" placeholder="Narxini kiriting">
+            <label>Narxi</label>
+            <input type="number" id="price" placeholder="Narxni kiriting">
         </div>
         <div class="input-group">
-            <label>Telefon raqam</label>
-            <input type="tel" id="phone" value="+998">
+            <label>Rasm havolasi (ixtiyoriy)</label>
+            <input type="text" id="photo_url" placeholder="Rasm manzili (link)">
         </div>
         <div class="input-group">
             <label>Tavsif</label>
-            <textarea id="desc" rows="3" placeholder="Holati haqida qo'shimcha ma'lumot..."></textarea>
+            <textarea id="desc" rows="3" placeholder="Batafsil ma'lumot..."></textarea>
         </div>
-        <button class="btn" onclick="sendToBot()">Guruhga yuborish</button>
+        <button class="btn" onclick="yuborish()">Guruhga yuborish</button>
     </div>
 </div>
 
@@ -51,27 +62,39 @@
     let tg = window.Telegram.WebApp;
     tg.expand();
 
-    function sendToBot() {
+    function showTab(tab) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+        
+        if(tab === 'view') {
+            document.querySelector('.tab:nth-child(1)').classList.add('active');
+            document.getElementById('tab-view').classList.add('active');
+        } else {
+            document.querySelector('.tab:nth-child(2)').classList.add('active');
+            document.getElementById('tab-add').classList.add('active');
+        }
+    }
+
+    function yuborish() {
         let name = document.getElementById('item_name').value;
         let price = document.getElementById('price').value;
-        let phone = document.getElementById('phone').value;
+        let photo = document.getElementById('photo_url').value;
         let desc = document.getElementById('desc').value;
 
-        if (!name || !price || !phone) {
-            alert("Iltimos, barcha maydonlarni to'ldiring!");
+        if(!name || !price) {
+            alert("Nom va narxni kiriting!");
             return;
         }
 
         let data = {
             item_name: name,
             price: price,
-            phone: phone,
+            photo: photo,
             desc: desc
         };
 
         tg.sendData(JSON.stringify(data));
     }
 </script>
-
 </body>
 </html>
