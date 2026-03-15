@@ -6,114 +6,163 @@
     <title>SMART MAHALLA PRO</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root { --main-color: #008080; } /* Yashil-moviy (Teal) rang */
-        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; margin: 0; padding: 15px; }
-        .card { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-        .header { text-align: center; margin-bottom: 20px; }
-        .header h2 { color: var(--main-color); margin: 0; font-size: 24px; }
+        :root { --main-color: #008080; --bg-color: #f0f2f5; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg-color); margin: 0; padding: 0; padding-bottom: 80px; }
         
+        /* Header */
+        .header { background: var(--main-color); color: white; padding: 15px; text-align: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .header h2 { margin: 0; font-size: 20px; letter-spacing: 1px; }
+
+        /* Tabs */
+        .tab-content { display: none; padding: 15px; animation: fadeIn 0.3s ease; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* E'lonlar ro'yxati (OLX Style) */
+        .elon-card { background: white; border-radius: 15px; margin-bottom: 12px; display: flex; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid #eee; }
+        .elon-img { width: 100px; height: 100px; background: #e0e0e0; display: flex; align-items: center; justify-content: center; font-size: 30px; }
+        .elon-info { padding: 10px; flex: 1; display: flex; flex-direction: column; justify-content: center; }
+        .elon-price { color: var(--main-color); font-weight: 800; font-size: 17px; margin: 0; }
+        .elon-title { font-size: 14px; font-weight: 600; color: #333; margin: 3px 0; }
+        .elon-meta { font-size: 11px; color: #888; }
+
+        /* Forma elementlari */
+        .card { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         .input-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 6px; font-weight: 600; color: #444; font-size: 14px; }
-        input, select, textarea { 
-            width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 12px; 
-            box-sizing: border-box; font-size: 16px; transition: 0.3s;
-        }
-        input:focus, select:focus, textarea:focus { border-color: var(--main-color); outline: none; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; color: #444; font-size: 13px; }
+        input, select, textarea { width: 100%; padding: 12px; border: 2px solid #edf0f2; border-radius: 12px; box-sizing: border-box; font-size: 15px; transition: 0.3s; }
+        input:focus, select:focus, textarea:focus { border-color: var(--main-color); outline: none; background: #fff; }
         
-        .btn { 
-            background: var(--main-color); color: white; border: none; padding: 16px; 
-            width: 100%; border-radius: 12px; font-size: 18px; font-weight: bold; 
-            cursor: pointer; margin-top: 10px; box-shadow: 0 5px 15px rgba(0,128,128,0.3);
-        }
-        .footer-logo { text-align: center; font-size: 11px; color: #aaa; margin-top: 20px; letter-spacing: 1px; }
+        .btn-submit { background: var(--main-color); color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+
+        /* Pastki Navbar */
+        .navbar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; border-top: 1px solid #eee; height: 65px; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
+        .nav-item { flex: 1; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #888; font-size: 12px; cursor: pointer; transition: 0.3s; }
+        .nav-item.active { color: var(--main-color); font-weight: bold; }
+        .nav-icon { font-size: 20px; margin-bottom: 2px; }
+
+        .footer-pechat { text-align: center; font-size: 10px; color: #bbb; margin-top: 20px; text-transform: uppercase; }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <div class="header">
-        <h2>SMART MAHALLA</h2>
-        <p style="font-size: 12px; color: #777;">E'loningizni to'g'ri bo'limga joylang</p>
-    </div>
-
-    <div class="input-group">
-        <label>Bo'limni tanlang</label>
-        <select id="category" onchange="updatePlaceholders()">
-            <option value="🚗 Mashina">🚗 Mashina</option>
-            <option value="🐄 Mol-hol">🐄 Mol-hol</option>
-            <option value="🐑 Qo'y-qo'zi">🐑 Qo'y-qo'zi</option>
-            <option value="🧱 Xomashyo">🧱 Xomashyo</option>
-            <option value="🌾 Yem-hashak">🌾 Yem-hashak</option>
-            <option value="🏠 Uy-joy">🏠 Uy-joy</option>
-            <option value="📱 Boshqa">📱 Boshqa</option>
-        </select>
-    </div>
-
-    <div class="input-group">
-        <label id="label_name">Mahsulot nomi</label>
-        <input type="text" id="name" placeholder="Masalan: Chevrolet Cobalt">
-    </div>
-
-    <div class="input-group">
-        <label>Narxi (so'm)</label>
-        <input type="number" id="price" placeholder="Sotilish narxini yozing">
-    </div>
-
-    <div class="input-group">
-        <label>Telefon raqamingiz</label>
-        <input type="tel" id="phone" value="+998" placeholder="+998 90 123 45 67">
-    </div>
-
-    <div class="input-group">
-        <label>Manzil (Mahalla/Ko'cha)</label>
-        <input type="text" id="address" placeholder="Masalan: Jarqo'rg'on tumani">
-    </div>
-
-    <div class="input-group">
-        <label>Qo'shimcha tavsif</label>
-        <textarea id="desc" rows="3" placeholder="Yili, holati haqida..."></textarea>
-    </div>
-
-    <button class="btn" onclick="sendData()">KAYINGI QADAM (RASM) ➔</button>
+<div class="header">
+    <h2 id="page-title">Smart Mahalla</h2>
 </div>
 
-<div class="footer-logo">ASOSCHI: ABDUJAMILOV YOLDOSH</div>
+<div id="tab-feed" class="tab-content active">
+    <div id="feed-container">
+        <div class="elon-card">
+            <div class="elon-img">📦</div>
+            <div class="elon-info">
+                <p class="elon-price">25,000,000 so'm</p>
+                <p class="elon-title">Chevrolet Nexia 3</p>
+                <p class="elon-meta">📍 Jarqo'rg'on tumani</p>
+            </div>
+        </div>
+        <p style="text-align: center; color: #999; font-size: 13px;">Barcha e'lonlar shu yerda ko'rinadi</p>
+    </div>
+</div>
+
+<div id="tab-add" class="tab-content">
+    <div class="card">
+        <div class="input-group">
+            <label>Bo'limni tanlang</label>
+            <select id="category" onchange="updateHelperTexts()">
+                <option value="🚗 Mashina">🚗 Mashina</option>
+                <option value="🐄 Mol-hol">🐄 Mol-hol</option>
+                <option value="🐑 Qo'y-qo'zi">🐑 Qo'y-qo'zi</option>
+                <option value="🧱 Xomashyo">🧱 Xomashyo</option>
+                <option value="🌾 Yem-hashak">🌾 Yem-hashak</option>
+                <option value="🏠 Uy-joy">🏠 Uy-joy</option>
+                <option value="📱 Boshqa">📱 Boshqa</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label id="label_name">Mahsulot nomi</label>
+            <input type="text" id="name" placeholder="Masalan: Chevrolet Cobalt">
+        </div>
+
+        <div class="input-group">
+            <label>Narxi (so'm)</label>
+            <input type="number" id="price" placeholder="Narxni kiriting">
+        </div>
+
+        <div class="input-group">
+            <label>Telefon raqamingiz</label>
+            <input type="tel" id="phone" value="+998">
+        </div>
+
+        <div class="input-group">
+            <label>Manzil</label>
+            <input type="text" id="address" placeholder="Mahalla yoki ko'cha nomi">
+        </div>
+
+        <div class="input-group">
+            <label>Batafsil tavsif</label>
+            <textarea id="desc" rows="3" placeholder="Holati haqida ma'lumot..."></textarea>
+        </div>
+
+        <button class="btn-submit" onclick="sendToBot()">KEYINGI QADAM (RASM) ➔</button>
+    </div>
+    <div class="footer-pechat">Asoschi: Abdujamilov Yo'ldosh</div>
+</div>
+
+<div class="navbar">
+    <div class="nav-item active" id="nav-feed" onclick="switchTab('feed')">
+        <span class="nav-icon">🏠</span>
+        <span>Asosiy</span>
+    </div>
+    <div class="nav-item" id="nav-add" onclick="switchTab('add')">
+        <span class="nav-icon">➕</span>
+        <span>E'lon berish</span>
+    </div>
+</div>
 
 <script>
     let tg = window.Telegram.WebApp;
     tg.expand();
 
-    // Bo'limga qarab placeholderlarni o'zgartiruvchi funksiya
-    function updatePlaceholders() {
+    // Tablarni almashtirish
+    function switchTab(tab) {
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        
+        if(tab === 'feed') {
+            document.getElementById('tab-feed').classList.add('active');
+            document.getElementById('nav-feed').classList.add('active');
+            document.getElementById('page-title').innerText = "Smart Mahalla";
+        } else {
+            document.getElementById('tab-add').classList.add('active');
+            document.getElementById('nav-add').classList.add('active');
+            document.getElementById('page-title').innerText = "Yangi e'lon";
+        }
+    }
+
+    // Kategoriyaga qarab yordamchi matnlarni o'zgartirish
+    function updateHelperTexts() {
         const cat = document.getElementById('category').value;
         const nameInput = document.getElementById('name');
         const descInput = document.getElementById('desc');
 
-        if (cat.includes("Mashina")) {
+        if(cat.includes("Mashina")) {
             nameInput.placeholder = "Masalan: Chevrolet Cobalt";
-            descInput.placeholder = "Yili: 2023, rangi: oq, yurgani: 10,000 km...";
-        } else if (cat.includes("Mol-hol")) {
-            nameInput.placeholder = "Masalan: Golshtin zotli sigir";
-            descInput.placeholder = "Suti: kuniga 20 litr, nechinchi bolasi...";
-        } else if (cat.includes("Qo'y-qo'zi")) {
-            nameInput.placeholder = "Masalan: Hisori qo'chqor";
-            descInput.placeholder = "Yoshi: 2 yosh, vazni: 80 kg atrofida...";
-        } else if (cat.includes("Xomashyo")) {
-            nameInput.placeholder = "Masalan: Pishgan g'isht";
-            descInput.placeholder = "Soni: 5000 dona, yetkazib berish ichida...";
-        } else if (cat.includes("Yem-hashak")) {
-            nameInput.placeholder = "Masalan: Bug'doy press";
-            descInput.placeholder = "Soni: 200 ta press, Jarqo'rg'onda...";
-        } else if (cat.includes("Uy-joy")) {
-            nameInput.placeholder = "Masalan: 4 xonali hovli";
-            descInput.placeholder = "Maydoni: 6 sotix, gaz, suv, svet bor...";
+            descInput.placeholder = "Yili: 2022, holati alo, 50,000 km yurgan...";
+        } else if(cat.includes("Mol-hol")) {
+            nameInput.placeholder = "Masalan: Shvits buqa";
+            descInput.placeholder = "Vazni, necha yoshligi, nima bilan boqilgan...";
+        } else if(cat.includes("Yem-hashak")) {
+            nameInput.placeholder = "Masalan: Bug'doy somon press";
+            descInput.placeholder = "Soni, qayerda turgani, yetkazib berish bormi...";
         } else {
             nameInput.placeholder = "Nima sotmoqchisiz?";
-            descInput.placeholder = "Batafsil ma'lumot yozing...";
+            descInput.placeholder = "Batafsil ma'lumot bering...";
         }
     }
 
-    function sendData() {
+    // Ma'lumotni botga yuborish
+    function sendToBot() {
         const data = {
             category: document.getElementById('category').value,
             item_name: document.getElementById('name').value,
@@ -124,16 +173,17 @@
         };
 
         if(!data.item_name || !data.price || data.phone === "+998") {
-            alert("Iltimos, barcha muhim joylarni to'ldiring!");
+            alert("Iltimos, barcha maydonlarni to'ldiring!");
             return;
         }
 
         tg.sendData(JSON.stringify(data));
         tg.close();
     }
-    
-    // Sahifa yuklanganda placeholderlarni birinchi marta to'g'irlash
-    updatePlaceholders();
+
+    // Dastlabki yordamchini o'rnatish
+    updateHelperTexts();
 </script>
+
 </body>
 </html>
